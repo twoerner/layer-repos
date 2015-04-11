@@ -13,6 +13,6 @@
 	<project remote="linaro" name="openembedded/meta-linaro" path="layers/meta-linaro" />
 	<project remote="oe" name="meta-openembedded" path="layers/meta-openembedded" />
 	<project remote="yocto" name="poky.git" path="layers/meta-poky" />
-	<!-- <project remote="yocto" name="meta-ti" path="layers/meta-ti" /> -->
+	<project remote="yocto" name="meta-ti" path="layers/meta-ti" />
 	<project remote="oe" name="openembedded-core" path="layers/openembedded-core" />
 </manifest>
