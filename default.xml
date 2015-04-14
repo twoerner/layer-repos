@@ -15,4 +15,5 @@
 	<project remote="yocto" name="poky.git" path="layers/meta-poky" />
 	<project remote="yocto" name="meta-ti" path="layers/meta-ti" />
 	<project remote="oe" name="openembedded-core" path="layers/openembedded-core" />
+	<project remote="github" name="linux-sunxi/meta-sunxi.git" path="layers/meta-sunxi" />
 </manifest>
