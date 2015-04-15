@@ -13,6 +13,7 @@
 	<project remote="github" name="koenkooi/meta-beagleboard.git" path="layers/meta-beagleboard" />
 	<project remote="yocto" name="meta-ti" revision="master" path="layers/meta-ti" />
 	<project remote="github" name="linux-sunxi/meta-sunxi.git" path="layers/meta-sunxi" />
+	<project remote="github" name="96boards/meta-96boards.git" path="layers/meta-96boards" />
 
 	<!-- distro layers -->
 	<project remote="yocto" name="poky.git" path="layers/meta-poky" />
