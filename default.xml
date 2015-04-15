@@ -15,12 +15,12 @@
 	<project remote="github" name="linux-sunxi/meta-sunxi.git" path="layers/meta-sunxi" />
 
 	<!-- distro layers -->
+	<project remote="yocto" name="poky.git" path="layers/meta-poky" />
 	<project remote="github" name="angstrom-distribution/meta-angstrom" path="layers/meta-angstrom" />
 
 	<!-- other layers -->
 	<project remote="oe" name="bitbake" path="layers/bitbake" />
 	<project remote="oe" name="meta-openembedded" path="layers/meta-openembedded" />
-	<project remote="yocto" name="poky.git" path="layers/meta-poky" />
 	<project remote="oe" name="openembedded-core" path="layers/openembedded-core" />
 	<project remote="linaro" name="openembedded/meta-linaro" path="layers/meta-linaro" />
 
