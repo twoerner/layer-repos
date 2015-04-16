@@ -13,6 +13,8 @@
 	<project remote="github" name="koenkooi/meta-beagleboard.git" path="layers/meta-beagleboard" />
 	<project remote="yocto" name="meta-ti" path="layers/meta-ti" />
 	<project remote="github" name="linux-sunxi/meta-sunxi.git" path="layers/meta-sunxi" />
+	<project remote="yocto" name="meta-fsl-arm.git" path="layers/meta-fsl-arm" />
+	<project remote="github" name="meta-fsl-arm-extra.git" path="layers/meta-fsl-arm-extra" />
 
 	<!-- distro layers -->
 	<project remote="yocto" name="poky.git" path="layers/meta-poky" />
