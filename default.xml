@@ -4,27 +4,27 @@
 	<default revision="daisy" sync-j="4" sync-c="1" />
 
 	<!-- locations from which to clone -->
-	<remote name="yocto" fetch="git://git.yoctoproject.org" />
-	<remote name="oe" fetch="git://git.openembedded.org" />
+	<remote name="yocto"  fetch="git://git.yoctoproject.org" />
+	<remote name="oe"     fetch="git://git.openembedded.org" />
 	<remote name="github" fetch="git://github.com" />
 	<remote name="linaro" fetch="git://git.linaro.org" />
 
 	<!-- BSP layers -->
-	<project remote="github" name="koenkooi/meta-beagleboard.git" path="layers/meta-beagleboard" />
-	<project remote="yocto" name="meta-ti" path="layers/meta-ti" />
-	<project remote="github" name="linux-sunxi/meta-sunxi.git" path="layers/meta-sunxi" />
-	<project remote="yocto" name="meta-fsl-arm.git" path="layers/meta-fsl-arm" />
+	<project remote="github" name="koenkooi/meta-beagleboard.git"    path="layers/meta-beagleboard" />
+	<project remote="yocto"  name="meta-ti"                          path="layers/meta-ti" />
+	<project remote="github" name="linux-sunxi/meta-sunxi.git"       path="layers/meta-sunxi" />
+	<project remote="yocto"  name="meta-fsl-arm.git"                 path="layers/meta-fsl-arm" />
 	<project remote="github" name="freescale/meta-fsl-arm-extra.git" path="layers/meta-fsl-arm-extra" />
-	<project remote="yocto" name="meta-xilinx.git" path="layers/meta-xilinx" />
+	<project remote="yocto"  name="meta-xilinx.git"                  path="layers/meta-xilinx" />
 
 	<!-- distro layers -->
-	<project remote="yocto" name="poky.git" path="layers/meta-poky" />
+	<project remote="yocto" name="poky.git"                                                                   path="layers/meta-poky" />
 	<project remote="github" name="angstrom-distribution/meta-angstrom" revision="angstrom-v2014.06-yocto1.6" path="layers/meta-angstrom" />
 
 	<!-- other layers -->
-	<project remote="oe" name="bitbake" revision="1.22" path="layers/bitbake" />
-	<project remote="oe" name="meta-openembedded" path="layers/meta-openembedded" />
-	<project remote="oe" name="openembedded-core" path="layers/openembedded-core" />
-	<project remote="linaro" name="openembedded/meta-linaro" path="layers/meta-linaro" />
+	<project remote="oe"     name="bitbake"                  revision="1.22" path="layers/bitbake" />
+	<project remote="oe"     name="meta-openembedded"                        path="layers/meta-openembedded" />
+	<project remote="oe"     name="openembedded-core"                        path="layers/openembedded-core" />
+	<project remote="linaro" name="openembedded/meta-linaro"                 path="layers/meta-linaro" />
 
 </manifest>
