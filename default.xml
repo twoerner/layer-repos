@@ -16,6 +16,7 @@
 	<project remote="yocto"  name="meta-fsl-arm.git"                 path="layers/meta-fsl-arm" />
 	<project remote="github" name="freescale/meta-fsl-arm-extra.git" path="layers/meta-fsl-arm-extra" />
 	<project remote="yocto"  name="meta-xilinx.git"                  path="layers/meta-xilinx" />
+	<project remote="yocto"  name="meta-raspberrypi.git"             path="layers/meta-raspberrypi" />
 
 	<!-- distro layers -->
 	<project remote="yocto"  name="poky.git"                                                                  path="layers/meta-poky" />
