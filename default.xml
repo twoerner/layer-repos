@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <manifest>
 	<!-- defaults -->
-	<default revision="master" sync-j="4" sync-c="1" />
+	<default revision="fido" sync-j="4" sync-c="1" />
 
 	<!-- locations from which to clone -->
 	<remote name="yocto"  fetch="git://git.yoctoproject.org" />
@@ -10,24 +10,23 @@
 	<remote name="linaro" fetch="git://git.linaro.org" />
 
 	<!-- BSP layers -->
-	<project remote="github" name="koenkooi/meta-beagleboard.git"    path="layers/meta-beagleboard" />
-	<project remote="yocto"  name="meta-ti"                          path="layers/meta-ti" />
-	<project remote="github" name="linux-sunxi/meta-sunxi.git"       path="layers/meta-sunxi" />
-	<project remote="github" name="96boards/meta-96boards.git"       path="layers/meta-96boards" />
-	<project remote="yocto"  name="meta-fsl-arm.git"                 path="layers/meta-fsl-arm" />
-	<project remote="github" name="freescale/meta-fsl-arm-extra.git" path="layers/meta-fsl-arm-extra" />
-	<project remote="yocto"  name="meta-xilinx.git"                  path="layers/meta-xilinx" />
-	<project remote="github" name="nathanrossi/meta-parallella.git"  path="layers/meta-parallella" />
-	<project remote="yocto"  name="meta-raspberrypi.git"             path="layers/meta-raspberrypi" />
+	<project remote="github" name="koenkooi/meta-beagleboard.git"    revision="b5c709b2b6bd3bf236df923fa8f245a00fbb1b60" path="layers/meta-beagleboard" />
+	<project remote="yocto"  name="meta-ti"                          revision="0a47b71b8c4222ca5136584aed15acbc218b199e" path="layers/meta-ti" />
+	<project remote="github" name="linux-sunxi/meta-sunxi.git"       revision="4f66286422457d029a55fb8b0c93c10990ebd9f4" path="layers/meta-sunxi" />
+	<project remote="github" name="96boards/meta-96boards.git"       revision="5968681299d9d26a5cba45aca5245a14bf8d9327" path="layers/meta-96boards" />
+	<project remote="yocto"  name="meta-fsl-arm.git"                                                                     path="layers/meta-fsl-arm" />
+	<project remote="github" name="freescale/meta-fsl-arm-extra.git"                                                     path="layers/meta-fsl-arm-extra" />
+	<project remote="yocto"  name="meta-xilinx.git"                  revision="276717514962728501de0b69aee0d9052d9a1366" path="layers/meta-xilinx" />
+	<project remote="yocto"  name="meta-raspberrypi.git"             revision="b896a7da70dd7a16ba7ffd664f7747cb37e1d142" path="layers/meta-raspberrypi" />
 
 	<!-- distro layers -->
-	<project remote="yocto"  name="poky.git"                            path="layers/meta-poky" />
-	<project remote="github" name="angstrom-distribution/meta-angstrom" path="layers/meta-angstrom" />
+	<project remote="yocto"  name="poky.git"                                                                  path="layers/meta-poky" />
+	<project remote="github" name="angstrom-distribution/meta-angstrom" revision="angstrom-v2015.06-yocto1.8" path="layers/meta-angstrom" />
 
 	<!-- other layers -->
-	<project remote="oe"     name="bitbake"                  path="layers/bitbake" />
-	<project remote="oe"     name="meta-openembedded"        path="layers/meta-openembedded" />
-	<project remote="oe"     name="openembedded-core"        path="layers/openembedded-core" />
-	<project remote="linaro" name="openembedded/meta-linaro" path="layers/meta-linaro" />
+	<project remote="oe"     name="bitbake"                  revision="1.26" path="layers/bitbake" />
+	<project remote="oe"     name="meta-openembedded"                        path="layers/meta-openembedded" />
+	<project remote="oe"     name="openembedded-core"                        path="layers/openembedded-core" />
+	<project remote="linaro" name="openembedded/meta-linaro"                 path="layers/meta-linaro" />
 
 </manifest>
