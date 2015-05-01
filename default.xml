@@ -16,8 +16,8 @@
 	<project remote="github" name="96boards/meta-96boards.git"       revision="5968681299d9d26a5cba45aca5245a14bf8d9327" path="layers/meta-96boards" />
 	<project remote="yocto"  name="meta-fsl-arm.git"                                                                     path="layers/meta-fsl-arm" />
 	<project remote="github" name="freescale/meta-fsl-arm-extra.git"                                                     path="layers/meta-fsl-arm-extra" />
-	<project remote="yocto"  name="meta-xilinx.git"                  revision="276717514962728501de0b69aee0d9052d9a1366" path="layers/meta-xilinx" />
-	<project remote="yocto"  name="meta-raspberrypi.git"             revision="b896a7da70dd7a16ba7ffd664f7747cb37e1d142" path="layers/meta-raspberrypi" />
+	<project remote="yocto"  name="meta-xilinx.git"                                                                      path="layers/meta-xilinx" />
+	<project remote="yocto"  name="meta-raspberrypi.git"                                                                 path="layers/meta-raspberrypi" />
 
 	<!-- distro layers -->
 	<project remote="yocto"  name="poky.git"                                                                  path="layers/meta-poky" />
