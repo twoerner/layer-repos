@@ -1,0 +1,329 @@
+#!/bin/bash
+# vim: noexpandtab ts=8 sts=8 sw=8
+# Copyright (C) 2012-13 O.S. Systems Software LTDA.
+# Authored-by:  Otavio Salvador <otavio@ossystems.com.br>
+# Adopted by:  Trevor Woerner <twoerner@gmail.com>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License version 2 as
+# published by the Free Software Foundation.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+# $1 - an array of choices
+# $2 - an array of the layers corresponding 1:1 with the choices in $1 (optional)
+# $3 - title
+# $4 - selection help
+# return - what the user chose, or ""
+choose() {
+	local _MENULIST=""
+	local _i
+	local -a _CHOICES=("${!1}")
+	local -a _LAYERS=("${!2}")
+	local _TITLE="$3"
+	local _HELP="$4"
+	local _CHOICE=""
+
+	help select > /dev/null 2>&1
+	if [ $? -eq 0 ]; then
+		echo $_TITLE >&2
+		for ((_i=0; _i<${#_CHOICES[*]}; ++_i)); do
+			if [ -n "$2" ]; then
+				_MENULIST="$_MENULIST ${_CHOICES[$_i]}(${_LAYERS[$_i]})"
+			else
+				_MENULIST="$_MENULIST ${_CHOICES[$_i]}"
+			fi
+		done
+		PS3="$_HELP by entering a number: "
+		select _CHOICE in $_MENULIST; do
+			if [ -n "$_CHOICE" ]; then
+				_CHOICE=$(echo $_CHOICE | cut -d'(' -f1)
+				break
+			fi
+			echo "invalid choice, please try again" >&2
+		done
+	else
+		which dialog > /dev/null 2>&1
+		if [ $? -eq 0 ]; then
+			for ((_i=0; _i<${#_CHOICES[*]}; ++_i)); do
+				if [ -n "$2" ]; then
+					_MENULIST="$_MENULIST ${_CHOICES[$_i]} ${_LAYERS[$_i]}"
+				else
+					_MENULIST="$_MENULIST ${_CHOICES[$_i]} ${_CHOICES[$_i]}"
+				fi
+			done
+			_CHOICE=$(dialog --title "$_TITLE" --menu "$_HELP" 0 0 $_i $_MENULIST 3>&1 1>&2 2>&3)
+		else
+			which whiptail > /dev/null 2>&1
+			if [ $? -eq 0 ]; then
+				for ((_i=0; _i<${#_CHOICES[*]}; ++_i)); do
+					if [ -n "$2" ]; then
+						_MENULIST="$_MENULIST ${_CHOICES[$_i]} ${_LAYERS[$_i]} OFF\n"
+					else
+						_MENULIST="$_MENULIST ${_CHOICES[$_i]} OFF\n"
+					fi
+				done
+				_CHOICE=$(whiptail --title "$_TITLE" --radiolist "$_HELP" $_i 100 $_i $_MENULIST 3>&1 1>&2 2>&3)
+			else
+				echo "no available choosers" >&2
+			fi
+		fi
+	fi
+
+	echo $_CHOICE
+}
+
+# return in $1 all known MACHINEs(layer)
+machinesNlayers() {
+	local _outvar=$1
+	local _tmp
+
+	_tmp=$(find layers -print | grep "conf/machine/.*\.conf" | grep -v scripts | grep -v meta-poky | sed -e 's/\.conf//g' | awk -F'/' '{print $NF "(" $2 ")"}' | sort)
+	eval $_outvar="'$_tmp'"
+}
+
+# return in $1 all SDKMACHINEs
+sdkmachines() {
+	local _outvar=$1
+	local _tmp
+
+	_tmp="i686 x86_64"
+	eval $_outvar="'$_tmp'"
+}
+
+# return in $1 all DISTROs(layers)
+distrosNlayers() {
+	local _outvar=$1
+	local _tmp
+
+	_tmp=$(ls layers/*/conf/distro/*.conf layers/*/*/conf/distro/*.conf | grep -v defaultsetup | sed -e 's/\.conf//g' | awk -F'/' '{print $NF "(" $2 ")"}' | sort)
+	_tmp="nodistro(openembedded-core) $_tmp"
+	eval $_outvar="'$_tmp'"
+}
+
+# return in $1 all IMAGEs(layers)
+imagesNlayers() {
+	local _outvar=$1
+	local _tmp
+
+	_tmp=$(find layers -print | grep ".*images.*bb" | grep -v meta-poky | sed -e 's/\.bb//g' | awk -F'/' '{print $NF "(" $2 ")"}' | sort)
+	eval $_outvar="'$_tmp'"
+}
+
+OEROOT=$PWD
+
+if [ "$0" = "$BASH_SOURCE" ]; then
+	# check we're in the right location
+	if [ ! -d $OEROOT/layers ]; then
+		echo "It doesn't look like I'm being run in the correct location."
+		echo "I can't find where the layers are stored."
+		echo "\$OEROOT/layers: $OEROOT/layers"
+		exit 1
+	fi
+
+	if [ $# -eq 0 ]; then
+		CMDLINEOPTS="-m -s -d -i --"
+	else
+		CMDLINEOPTS=$(getopt -o msdic --long machines,sdkmachines,distros,images,config -- "$@")
+		if [ $? != 0 ]; then
+			echo "ERROR: bad cmdline"
+			exit 1
+		fi
+	fi
+	eval set -- "$CMDLINEOPTS"
+	while true; do
+		case "$1" in
+			-m|--machines)
+				machinesNlayers MACHINES
+				echo -e "\nAvailable Machines:"
+				echo $MACHINES | tr ' ' '\n' | sed -e 's/^/\t/' | sed -e 's/(/ (/'
+				;;
+			-s|--sdkmachines)
+				sdkmachines SDKMACHINES
+				echo -e "\nAvailable SDK Machines:"
+				echo $SDKMACHINES | tr ' ' '\n' | sed -e 's/^/\t/'
+				;;
+			-d|--distros)
+				distrosNlayers DISTROS
+				echo -e "\nAvailable Distros:"
+				echo $DISTROS | tr ' ' '\n' | sed -e 's/^/\t/' | sed -e 's/(/ (/'
+				;;
+			-i|--images)
+				imagesNlayers IMAGES
+				echo -e "\nAvailable Images:"
+				echo $IMAGES | tr ' ' '\n' | sed -e 's/^/\t/' | sed -e 's/(/ (/'
+				;;
+			-c|--config)
+				if [ -r build/conf/auto.conf ]; then
+					cat build/conf/auto.conf
+				else
+					echo "Can't find build/conf/auto.conf"
+				fi
+				;;
+			--)
+				break
+				;;
+			*)
+				echo "ERROR: internal error! ($1)"
+				exit 1
+				;;
+		esac
+		shift
+	done
+	exit
+fi
+
+BUILDDIR="$1"
+if [ -z "$BUILDDIR" ]; then
+	BUILDDIR=build
+fi
+
+if [ "$(whoami)" = "root" ]; then
+	echo "ERROR: do not use this setup program as root!"
+	return
+fi
+
+# check we're in the right location
+if [ ! -d $OEROOT/layers ]; then
+	echo "It doesn't look like I'm being run in the correct location."
+	echo "I can't find where the layers are stored."
+	return
+fi
+
+## choose a MACHINE
+if [ -z "$MACHINE" ]; then
+	declare -a MACHINES
+	declare -a MACHLAYR
+	machinesNlayers tmpMACHINES
+	for MAC in $tmpMACHINES; do
+		MACHINES+=($(echo $MAC | cut -d'(' -f1))
+		MACHLAYR+=($(echo $MAC | cut -d'(' -f2 | cut -d')' -f1))
+	done
+	unset tmpMACHINES
+	unset MAC
+	MACHINE=$(choose MACHINES[@] MACHLAYR[@] "Available machines" "Please choose a machine")
+	echo ""
+
+	# guard against Ctrl-D or cancel
+	if [ -z "$MACHINE" ]; then
+		echo ""
+		echo "To choose a machine interactively please install bash, dialog, or whiptail."
+		echo "To choose a machine non-interactively please use the following syntax:"
+		echo "    MACHINE=<your-machine> . setup"
+		echo ""
+		echo "Possible <your-machine> choices are:"
+		echo ${MACHINES[*]} | tr ' ' '\n' | sed -e 's/^/\t/'
+		return
+	fi
+	unset MACHINES
+	unset MACHLAYR
+fi
+
+## choose an SDKMACHINE
+if [ -z "$SDKMACHINE" ]; then
+	declare -a SDKMACHINES
+	sdkmachines tmpSDKMACHINES
+	SDKMACHINES=($tmpSDKMACHINES)
+	unset tmpSDKMACHINES
+	SDKMACHINE=$(choose SDKMACHINES[@] "" "Available SDKs" "Please choose an SDK machine")
+	echo ""
+
+	if [ -z "$SDKMACHINE" ]; then
+		echo "To choose an SDK machine interactively please install bash, dialog, or whiptail."
+		echo "To choose a machine non-interactively please use the following syntax:"
+		echo "    SDKMACHINE=<your-sdk-machine> . setup"
+		echo ""
+		echo "Possible <your-sdk-machine> choices are:"
+		echo ${SDKMACHINES[*]} | tr ' ' '\n' | sed -e 's/^/\t/'
+		return
+	fi
+	unset SDKMACHINES
+fi
+
+## choose a DISTRO
+if [ -z "$DISTRO" ]; then
+	declare -a DISTROS
+	distrosNlayers tmpDISTROS
+	for DIS in $tmpDISTROS; do
+		DISTROS+=($(echo $DIS | cut -d'(' -f1))
+		DISTLYR+=($(echo $DIS | cut -d'(' -f2 | cut -d')' -f1))
+	done
+	unset tmpDISTROS
+	unset DIS
+	DISTRO=$(choose DISTROS[@] DISTLYR[@] "Available distros" "Please choose a distro")
+	echo ""
+
+	if [ -z "$DISTRO" ]; then
+		echo "To choose a distro interactively please install bash, dialog, or whiptail."
+		echo "To choose a distro non-interactively please use the following syntax:"
+		echo "    DISTRO=<your-distro> . setup"
+		echo ""
+		echo "Possible <your-distro> choices are:"
+		echo ${DISTROS[*]} | tr ' ' '\n' | sed -e 's/^/\t/'
+		return
+	fi
+	unset DISTLYR
+	unset DISTROS
+fi
+
+# Clean up PATH, because if it includes tokens to current directories somehow,
+# wrong binaries can be used instead of the expected ones during task execution
+export PATH="$(echo ${PATH} | sed -e 's/\(:.\|:\)*:/:/g;s/^.\?://;s/:.\?$//')"
+NEWPATHS="$OEROOT/scripts:$OEROOT/layers/bitbake/bin:"
+export PATH=$NEWPATHS$(echo $PATH | sed -e "s|:$NEWPATHS|:|g" -e "s|^$NEWPATHS||")
+unset NEWPATHS
+
+# Make sure Bitbake doesn't filter out the following variables from our environment.
+export BB_ENV_EXTRAWHITE="MACHINE DISTRO TCMODE TCLIBC HTTP_PROXY http_proxy \
+HTTPS_PROXY https_proxy FTP_PROXY ftp_proxy FTPS_PROXY ftps_proxy ALL_PROXY \
+all_proxy NO_PROXY no_proxy SSH_AGENT_PID SSH_AUTH_SOCK BB_SRCREV_POLICY \
+SDKMACHINE BB_NUMBER_THREADS BB_NO_NETWORK PARALLEL_MAKE GIT_PROXY_COMMAND \
+SOCKS5_PASSWD SOCKS5_USER SCREENDIR STAMPS_DIR"
+
+TEMPLATECONF=$OEROOT/layers/manifest/conf
+mkdir -p $BUILDDIR/conf
+if [ ! -r $BUILDDIR/conf/local.conf ]; then
+	cp $TEMPLATECONF/local.conf $BUILDDIR/conf/local.conf
+fi
+if [ ! -r $BUILDDIR/conf/bblayers.conf ]; then
+	sed -e "s|##OEROOT##|$OEROOT|g" $TEMPLATECONF/bblayers.conf > "$BUILDDIR/conf/bblayers.conf"
+fi
+
+cat > $BUILDDIR/conf/auto.conf <<-EOF
+	MACHINE ?= "${MACHINE}"
+	SDKMACHINE ?= "${SDKMACHINE}"
+	DISTRO ?= "${DISTRO}"
+EOF
+
+if [ ! -e $BUILDDIR/conf/site.conf ]; then
+	cat > $BUILDDIR/conf/site.conf <<-EOF
+		SCONF_VERSION = "1"
+		# Which files do we want to parse:
+		BBFILES ?= "${OEROOT}/layers/openembedded-core/meta/recipes-*/*/*.bb"
+	EOF
+fi
+
+imagesNlayers IMAGETARGETS
+cat <<EOF
+Your build environemnt has been configured with:
+
+MACHINE=$MACHINE
+SDKMACHINE=$SDKMACHINE
+DISTRO=$DISTRO
+
+You can now run 'bitbake <target>'
+
+Some image targets are:
+EOF
+echo $IMAGETARGETS | tr ' ' '\n' | sed -e 's/^/\t/' | sed -e 's/(/ (/'
+unset IMAGETARGETS
+
+cd $BUILDDIR
+unset BUILDDIR
