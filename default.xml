@@ -20,6 +20,7 @@
 	<project remote="github" name="nathanrossi/meta-parallella.git"  path="layers/meta-parallella" />
 	<project remote="yocto"  name="meta-raspberrypi.git"             path="layers/meta-raspberrypi" />
 	<project remote="github" name="gumstix/meta-gumstix"             path="layers/meta-gumstix" revision="next" />
+	<project remote="github" name="linux-meson/meta-amlogic"         path="layers/meta-amlogic-meson" />
 
 	<!-- distro layers -->
 	<project remote="yocto"  name="poky.git"                            path="layers/meta-poky" />
