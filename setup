@@ -80,6 +80,28 @@ choose() {
 	echo $_CHOICE
 }
 
+dldir() {
+	local _dldir=""
+	local _helpstring="Please indicate the location of your DL_DIR (downloads directory): "
+
+	help read > /dev/null 2>&1
+	if [ $? -eq 0 ]; then
+		read -e -p "$_helpstring" _dldir
+	else
+		which dialog > /dev/null 2>&1
+		if [ $? -eq 0 ]; then
+			_dldir=$(dialog --inputbox "$_helpstring" 0 0 3>&1 1>&2 2>&3)
+		else
+			which whiptail > /dev/null 2>&1
+			if [ $? -eq 0 ]; then
+				_dldir=$(whiptail --inputbox "$_helpstring" 0 0 3>&1 1>&2 2>&3)
+			fi
+		fi
+	fi
+
+	echo $_dldir
+}
+
 # return in $1 all known MACHINEs(layer)
 machinesNlayers() {
 	local _outvar=$1
@@ -278,6 +300,12 @@ if [ -z "$DISTRO" ]; then
 	unset DISTROS
 fi
 
+## specify your DL_DIR
+if [ -z "$DL_DIR" ]; then
+	DL_DIR="$OEROOT/downloads"
+	DL_DIR=$(dldir)
+fi
+
 # Clean up PATH, because if it includes tokens to current directories somehow,
 # wrong binaries can be used instead of the expected ones during task execution
 export PATH="$(echo ${PATH} | sed -e 's/\(:.\|:\)*:/:/g;s/^.\?://;s/:.\?$//')"
@@ -305,6 +333,7 @@ cat > $BUILDDIR/conf/auto.conf <<-EOF
 	MACHINE ?= "${MACHINE}"
 	SDKMACHINE ?= "${SDKMACHINE}"
 	DISTRO ?= "${DISTRO}"
+	DL_DIR ?= "${DL_DIR}"
 EOF
 
 if [ ! -e $BUILDDIR/conf/site.conf ]; then
@@ -319,9 +348,10 @@ imagesNlayers IMAGETARGETS
 cat <<EOF
 Your build environemnt has been configured with:
 
-MACHINE=$MACHINE
-SDKMACHINE=$SDKMACHINE
-DISTRO=$DISTRO
+	MACHINE: $MACHINE
+	SDKMACHINE: $SDKMACHINE
+	DISTRO: $DISTRO
+	DL_DIR: $DL_DIR
 
 You can now run 'bitbake <target>'
 
@@ -331,4 +361,4 @@ echo $IMAGETARGETS | tr ' ' '\n' | sed -e 's/^/\t/' | sed -e 's/(/ (/'
 unset IMAGETARGETS
 
 cd $BUILDDIR
-unset OEROOT BUILDDIR MACHINE SDKMACHINE DISTRO
+unset OEROOT BUILDDIR MACHINE SDKMACHINE DISTRO DL_DIR
