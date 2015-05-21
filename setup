@@ -234,6 +234,8 @@ if [ -z "$MACHINE" ]; then
 	unset MAC
 	MACHINE=$(choose MACHINES[@] MACHLAYR[@] "Available machines" "Please choose a machine")
 	echo ""
+	unset MACHINES
+	unset MACHLAYR
 
 	# guard against Ctrl-D or cancel
 	if [ -z "$MACHINE" ]; then
@@ -247,8 +249,6 @@ if [ -z "$MACHINE" ]; then
 		unset OEROOT BUILDDIR MACHINE
 		return
 	fi
-	unset MACHINES
-	unset MACHLAYR
 fi
 
 ## choose an SDKMACHINE
@@ -259,6 +259,7 @@ if [ -z "$SDKMACHINE" ]; then
 	unset tmpSDKMACHINES
 	SDKMACHINE=$(choose SDKMACHINES[@] "" "Available SDKs" "Please choose an SDK machine")
 	echo ""
+	unset SDKMACHINES
 
 	if [ -z "$SDKMACHINE" ]; then
 		echo "To choose an SDK machine interactively please install bash, dialog, or whiptail."
@@ -270,7 +271,6 @@ if [ -z "$SDKMACHINE" ]; then
 		unset OEROOT BUILDDIR MACHINE SDKMACHINE
 		return
 	fi
-	unset SDKMACHINES
 fi
 
 ## choose a DISTRO
@@ -285,6 +285,8 @@ if [ -z "$DISTRO" ]; then
 	unset DIS
 	DISTRO=$(choose DISTROS[@] DISTLYR[@] "Available distros" "Please choose a distro")
 	echo ""
+	unset DISTLYR
+	unset DISTROS
 
 	if [ -z "$DISTRO" ]; then
 		echo "To choose a distro interactively please install bash, dialog, or whiptail."
@@ -296,8 +298,6 @@ if [ -z "$DISTRO" ]; then
 		unset OEROOT BUILDDIR MACHINE SDKMACHINE DISTRO
 		return
 	fi
-	unset DISTLYR
-	unset DISTROS
 fi
 
 ## specify your DL_DIR
