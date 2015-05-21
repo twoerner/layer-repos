@@ -187,6 +187,7 @@ fi
 
 if [ "$(whoami)" = "root" ]; then
 	echo "ERROR: do not use this setup program as root!"
+	unset OEROOT BUILDDIR
 	return
 fi
 
@@ -194,6 +195,7 @@ fi
 if [ ! -d $OEROOT/layers ]; then
 	echo "It doesn't look like I'm being run in the correct location."
 	echo "I can't find where the layers are stored."
+	unset OEROOT BUILDDIR
 	return
 fi
 
@@ -220,6 +222,7 @@ if [ -z "$MACHINE" ]; then
 		echo ""
 		echo "Possible <your-machine> choices are:"
 		echo ${MACHINES[*]} | tr ' ' '\n' | sed -e 's/^/\t/'
+		unset OEROOT BUILDDIR MACHINE
 		return
 	fi
 	unset MACHINES
@@ -242,6 +245,7 @@ if [ -z "$SDKMACHINE" ]; then
 		echo ""
 		echo "Possible <your-sdk-machine> choices are:"
 		echo ${SDKMACHINES[*]} | tr ' ' '\n' | sed -e 's/^/\t/'
+		unset OEROOT BUILDDIR MACHINE SDKMACHINE
 		return
 	fi
 	unset SDKMACHINES
@@ -267,6 +271,7 @@ if [ -z "$DISTRO" ]; then
 		echo ""
 		echo "Possible <your-distro> choices are:"
 		echo ${DISTROS[*]} | tr ' ' '\n' | sed -e 's/^/\t/'
+		unset OEROOT BUILDDIR MACHINE SDKMACHINE DISTRO
 		return
 	fi
 	unset DISTLYR
@@ -326,4 +331,4 @@ echo $IMAGETARGETS | tr ' ' '\n' | sed -e 's/^/\t/' | sed -e 's/(/ (/'
 unset IMAGETARGETS
 
 cd $BUILDDIR
-unset BUILDDIR
+unset OEROOT BUILDDIR MACHINE SDKMACHINE DISTRO
