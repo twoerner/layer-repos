@@ -309,7 +309,7 @@ fi
 # Clean up PATH, because if it includes tokens to current directories somehow,
 # wrong binaries can be used instead of the expected ones during task execution
 export PATH="$(echo ${PATH} | sed -e 's/\(:.\|:\)*:/:/g;s/^.\?://;s/:.\?$//')"
-NEWPATHS="$OEROOT/scripts:$OEROOT/layers/bitbake/bin:"
+NEWPATHS="$OEROOT/layers/openembedded-core/scripts:$OEROOT/layers/bitbake/bin:"
 export PATH=$NEWPATHS$(echo $PATH | sed -e "s|:$NEWPATHS|:|g" -e "s|^$NEWPATHS||")
 unset NEWPATHS
 
