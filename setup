@@ -299,6 +299,9 @@ if [ -z "$DISTRO" ]; then
 		return
 	fi
 fi
+if [ -z "$DISTRO" ]; then
+	DISTRO=poky
+fi
 
 ## specify your DL_DIR
 if [ -z "$DL_DIR" ]; then
@@ -361,4 +364,16 @@ echo $IMAGETARGETS | tr ' ' '\n' | sed -e 's/^/\t/' | sed -e 's/(/ (/'
 unset IMAGETARGETS
 
 cd $BUILDDIR
+
+# if the user hasn't selected 'angstrom' as their DISTRO we need to remove its layer
+if [ x"$DISTRO" != x"angstrom" ]; then
+	bitbake-layers remove-layer *angstrom
+	if [ $? -ne 0 ]; then
+		echo "You have selected a DISTRO other than 'angstrom' ($DISTRO)"
+		echo "but I wasn't able to remove meta-angstrom, therefore it will"
+		echo "set your DISTRO to angstrom unless you remove meta-angstrom"
+		echo "from your conf/bblayers.conf manually."
+	fi
+fi
+
 unset OEROOT BUILDDIR MACHINE SDKMACHINE DISTRO DL_DIR
