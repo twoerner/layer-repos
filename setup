@@ -234,7 +234,6 @@ if [ -z "$MACHINE" ]; then
 	unset MAC
 	MACHINE=$(choose MACHINES[@] MACHLAYR[@] "Available machines" "Please choose a machine")
 	echo ""
-	unset MACHINES
 	unset MACHLAYR
 
 	# guard against Ctrl-D or cancel
@@ -246,9 +245,10 @@ if [ -z "$MACHINE" ]; then
 		echo ""
 		echo "Possible <your-machine> choices are:"
 		echo ${MACHINES[*]} | tr ' ' '\n' | sed -e 's/^/\t/'
-		unset OEROOT BUILDDIR MACHINE
+		unset OEROOT BUILDDIR MACHINE MACHINES
 		return
 	fi
+	unset MACHINES
 fi
 
 ## choose an SDKMACHINE
@@ -259,7 +259,6 @@ if [ -z "$SDKMACHINE" ]; then
 	unset tmpSDKMACHINES
 	SDKMACHINE=$(choose SDKMACHINES[@] "" "Available SDKs" "Please choose an SDK machine")
 	echo ""
-	unset SDKMACHINES
 
 	if [ -z "$SDKMACHINE" ]; then
 		echo "To choose an SDK machine interactively please install bash, dialog, or whiptail."
@@ -268,9 +267,10 @@ if [ -z "$SDKMACHINE" ]; then
 		echo ""
 		echo "Possible <your-sdk-machine> choices are:"
 		echo ${SDKMACHINES[*]} | tr ' ' '\n' | sed -e 's/^/\t/'
-		unset OEROOT BUILDDIR MACHINE SDKMACHINE
+		unset OEROOT BUILDDIR MACHINE SDKMACHINE SDKMACHINES
 		return
 	fi
+	unset SDKMACHINES
 fi
 
 ## choose a DISTRO
@@ -286,7 +286,6 @@ if [ -z "$DISTRO" ]; then
 	DISTRO=$(choose DISTROS[@] DISTLYR[@] "Available distros" "Please choose a distro")
 	echo ""
 	unset DISTLYR
-	unset DISTROS
 
 	if [ -z "$DISTRO" ]; then
 		echo "To choose a distro interactively please install bash, dialog, or whiptail."
@@ -295,9 +294,10 @@ if [ -z "$DISTRO" ]; then
 		echo ""
 		echo "Possible <your-distro> choices are:"
 		echo ${DISTROS[*]} | tr ' ' '\n' | sed -e 's/^/\t/'
-		unset OEROOT BUILDDIR MACHINE SDKMACHINE DISTRO
+		unset OEROOT BUILDDIR MACHINE SDKMACHINE DISTRO DISTROS
 		return
 	fi
+	unset DISTROS
 fi
 if [ -z "$DISTRO" ]; then
 	DISTRO=poky
