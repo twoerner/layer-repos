@@ -337,6 +337,7 @@ cat > $BUILDDIR/conf/auto.conf <<-EOF
 	SDKMACHINE ?= "${SDKMACHINE}"
 	DISTRO ?= "${DISTRO}"
 	DL_DIR ?= "${DL_DIR}"
+	BBLAYERS_FETCH_DIR = "$OEROOT/layers"
 EOF
 
 if [ ! -e $BUILDDIR/conf/site.conf ]; then
