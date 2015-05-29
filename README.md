@@ -42,8 +42,28 @@ need to setup your build environment:
 
 You'll be prompted to choose your MACHINE, SDKMACHINE, DISTRO, and download location (DL_DIR).
 
+If you want to specify a build directory (for performing multiple builds
+from the same set of layers) simply include your build directory name as a
+parameter to the "setup" script:
+
+	$ . setup <build_dir>
+	e.g.
+	$ . setup rpi-linaro-build
+
+A build directory of "build" will be used by default if you don't specify a
+build directory name.
+
 After successfully setting up your build environment, you can now issue
 "bitbake" commands.
+
+If you would like to see, again, the list of (for example) possible images you
+can invoke the "setup" script as a regular script (i.e. instead of sourcing
+it):
+
+	$ ./setup
+
+and it will show all the: Available Machines, Available SDK Machines,
+Available Distros, and Available Images.
 
 
 Creating A Local Topic Branch
