@@ -40,7 +40,7 @@ need to setup your build environment:
 
 	$ . setup
 
-You'll be prompted to choose your MACHINE, SDKMACHINE, and DISTRO.
+You'll be prompted to choose your MACHINE, SDKMACHINE, DISTRO, and download location (DL_DIR).
 
 After successfully setting up your build environment, you can now issue
 "bitbake" commands.
