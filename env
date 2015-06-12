@@ -1,0 +1,64 @@
+#!/bin/bash
+# vim: noexpandtab ts=8 sts=8 sw=8
+# Copyright (C) 2015  Trevor Woerner <twoerner@gmail.com>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License version 2 as
+# published by the Free Software Foundation.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+OEROOT=$PWD
+
+if [ "$0" = "$BASH_SOURCE" ]; then
+	echo "ERROR: This scripts needs to adjust your environment variables"
+	echo "       therefore it needs to be sourced, not run directly"
+	echo ""
+	echo "e.g."
+	echo "       \$ . $0"
+	exit 1
+fi
+
+BUILDDIR="$1"
+if [ -z "$BUILDDIR" ]; then
+	BUILDDIR=build
+fi
+
+if [ "$(whoami)" = "root" ]; then
+	echo "ERROR: do not use this setup program as root!"
+	unset OEROOT BUILDDIR
+	return
+fi
+
+# check we're in the right location
+if [ ! -d $OEROOT/layers ]; then
+	echo "It doesn't look like I'm being run in the correct location."
+	echo "I can't find where the layers are stored."
+	unset OEROOT BUILDDIR
+	return
+fi
+
+# Clean up PATH, because if it includes tokens to current directories somehow,
+# wrong binaries can be used instead of the expected ones during task execution
+export PATH="$(echo ${PATH} | sed -e 's/\(:.\|:\)*:/:/g;s/^.\?://;s/:.\?$//')"
+NEWPATHS="$OEROOT/layers/openembedded-core/scripts:$OEROOT/layers/bitbake/bin:"
+export PATH=$NEWPATHS$(echo $PATH | sed -e "s|:$NEWPATHS|:|g" -e "s|^$NEWPATHS||")
+unset NEWPATHS
+
+# Make sure Bitbake doesn't filter out the following variables from our environment.
+export BB_ENV_EXTRAWHITE="MACHINE DISTRO TCMODE TCLIBC HTTP_PROXY http_proxy \
+HTTPS_PROXY https_proxy FTP_PROXY ftp_proxy FTPS_PROXY ftps_proxy ALL_PROXY \
+all_proxy NO_PROXY no_proxy SSH_AGENT_PID SSH_AUTH_SOCK BB_SRCREV_POLICY \
+SDKMACHINE BB_NUMBER_THREADS BB_NO_NETWORK PARALLEL_MAKE GIT_PROXY_COMMAND \
+SOCKS5_PASSWD SOCKS5_USER SCREENDIR STAMPS_DIR"
+
+cd $BUILDDIR
+
+unset OEROOT BUILDDIR

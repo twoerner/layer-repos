@@ -35,6 +35,7 @@
 	<project remote="yocto"  name="meta-realtime.git"        path="layers/meta-realtime" />
 	<project remote="github" name="twoerner/layer-repos"     path="layers/manifest">
 		<copyfile src="setup" dest="setup" />
+		<copyfile src="env" dest="env" />
 	</project>
 
 </manifest>
