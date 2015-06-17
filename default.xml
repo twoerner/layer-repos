@@ -33,6 +33,7 @@
 	<project remote="linaro" name="openembedded/meta-linaro" path="layers/meta-linaro" />
 	<project remote="github" name="meta-qt5/meta-qt5.git"    path="layers/meta-qt5" />
 	<project remote="yocto"  name="meta-realtime.git"        path="layers/meta-realtime" />
+	<project remote="github" name="twoerner/meta-fullrt.git" path="layers/meta-fullrt" />
 	<project remote="github" name="twoerner/layer-repos"     path="layers/manifest">
 		<copyfile src="setup" dest="setup" />
 		<copyfile src="env" dest="env" />
