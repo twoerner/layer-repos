@@ -9,34 +9,35 @@
 	<remote name="github" fetch="git://github.com" />
 	<remote name="linaro" fetch="git://git.linaro.org" />
 
+	<!-- bitbake -->
+	<project remote="oe"     name="bitbake"                             path="bitbake" />
+
 	<!-- BSP layers -->
-	<project remote="github" name="koenkooi/meta-beagleboard.git"    path="layers/meta-beagleboard" />
-	<project remote="yocto"  name="meta-ti"                          path="layers/meta-ti" />
-	<project remote="github" name="linux-sunxi/meta-sunxi.git"       path="layers/meta-sunxi" />
-	<project remote="github" name="96boards/meta-96boards.git"       path="layers/meta-96boards" />
-	<project remote="yocto"  name="meta-fsl-arm.git"                 path="layers/meta-fsl-arm" />
-	<project remote="github" name="freescale/meta-fsl-arm-extra.git" path="layers/meta-fsl-arm-extra" />
-	<project remote="yocto"  name="meta-xilinx.git"                  path="layers/meta-xilinx" />
-	<project remote="github" name="nathanrossi/meta-parallella.git"  path="layers/meta-parallella" />
-	<project remote="yocto"  name="meta-raspberrypi.git"             path="layers/meta-raspberrypi" />
-	<project remote="github" name="gumstix/meta-gumstix"             path="layers/meta-gumstix" revision="next" />
-	<project remote="github" name="linux-meson/meta-amlogic"         path="layers/meta-amlogic-meson" />
+	<project remote="github" name="twoerner/meta-chip_twoerner.git"     path="layers/meta-chip" />
+	<project remote="github" name="linux-sunxi/meta-sunxi.git"          path="layers/meta-sunxi" />
+	<project remote="github" name="ndechesne/meta-qcom.git"             path="layers/meta-qcom" />
+	<project remote="github" name="twoerner/meta-rockchip_twoerner.git" path="layers/meta-rockchip" />
+	<project remote="github" name="96boards/meta-96boards.git"          path="layers/meta-96boards" />
+	<project remote="yocto"  name="meta-fsl-arm.git"                    path="layers/meta-fsl-arm" />
+	<project remote="yocto"  name="meta-intel.git"                      path="layers/meta-intel" />
+	<project remote="yocto"  name="meta-raspberrypi.git"                path="layers/meta-raspberrypi" />
 
 	<!-- distro layers -->
 	<project remote="yocto"  name="poky.git"                            path="layers/meta-poky" />
 	<project remote="github" name="angstrom-distribution/meta-angstrom" path="layers/meta-angstrom" />
 
 	<!-- other layers -->
-	<project remote="oe"     name="bitbake"                  path="bitbake" />
-	<project remote="oe"     name="meta-openembedded"        path="layers/meta-openembedded" />
-	<project remote="oe"     name="openembedded-core"        path="layers/openembedded-core" />
-	<project remote="linaro" name="openembedded/meta-linaro" path="layers/meta-linaro" />
-	<project remote="github" name="meta-qt5/meta-qt5.git"    path="layers/meta-qt5" />
-	<project remote="yocto"  name="meta-realtime.git"        path="layers/meta-realtime" />
-	<project remote="github" name="twoerner/meta-fullrt.git" path="layers/meta-fullrt" />
-	<project remote="github" name="twoerner/layer-repos"     path="layers/manifest">
-		<copyfile src="setup" dest="setup" />
-		<copyfile src="env" dest="env" />
+	<project remote="oe"     name="meta-openembedded"                   path="layers/meta-openembedded" />
+	<project remote="oe"     name="openembedded-core"                   path="layers/openembedded-core" />
+	<project remote="linaro" name="openembedded/meta-linaro"            path="layers/meta-linaro" />
+	<project remote="github" name="meta-qt5/meta-qt5.git"               path="layers/meta-qt5" />
+	<project remote="yocto"  name="meta-realtime.git"                   path="layers/meta-realtime" />
+	<project remote="github" name="twoerner/meta-fullrt.git"            path="layers/meta-fullrt" />
+
+	<!-- misc -->
+	<project remote="github" name="twoerner/oe-repo-config.git"         path=".repo/oe-repo-config">
+		<linkfile dest="setup" src="../../.repo/oe-repo-config/setup" />
+		<linkfile dest="env" src="../../.repo/oe-repo-config/env" />
 	</project>
 
 </manifest>
