@@ -395,6 +395,7 @@ cat > $BUILDDIR/conf/auto.conf <<-EOF
 	SDKMACHINE ?= "${SDKMACHINE}"
 	DISTRO ?= "${DISTRO}"
 	DL_DIR ?= "${DL_DIR}"
+	SSTATE_DIR ?= "$__orc_OEROOT/sstate-cache"
 	BBLAYERS_FETCH_DIR = "$__orc_OEROOT/layers"
 EOF
 
@@ -414,6 +415,7 @@ Your build environemnt has been configured with:
 	SDKMACHINE: $SDKMACHINE
 	DISTRO: $DISTRO
 	DL_DIR: $DL_DIR
+	SSTATE_DIR: $SSTATE_DIR
 
 You can now run 'bitbake <target>'
 
