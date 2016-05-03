@@ -1,8 +1,7 @@
 #!/bin/bash
 # vim: noexpandtab ts=8 sts=8 sw=8
-# Copyright (C) 2012-13 O.S. Systems Software LTDA.
-# Authored-by:  Otavio Salvador <otavio@ossystems.com.br>
-# Adopted by:  Trevor Woerner <twoerner@gmail.com>
+# Copyright (C) 2015-present Trevor Woerner <twoerner@gmail.com>
+# based on work from  Otavio Salvador <otavio@ossystems.com.br>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 2 as
