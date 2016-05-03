@@ -394,14 +394,14 @@ cat > $BUILDDIR/conf/auto.conf <<-EOF
 	MACHINE ?= "$MACHINE"
 	SDKMACHINE ?= "$SDKMACHINE"
 	DISTRO ?= "$DISTRO"
-	DL_DIR ?= "$DL_DIR"
-	SSTATE_DIR ?= "$__orc_OEROOT/sstate-cache"
 	BBLAYERS_FETCH_DIR = "$__orc_OEROOT/layers"
 EOF
 
 if [ ! -e $BUILDDIR/conf/site.conf ]; then
 	cat > $BUILDDIR/conf/site.conf <<-EOF
 		SCONF_VERSION = "1"
+		DL_DIR ?= "$DL_DIR"
+		SSTATE_DIR ?= "$__orc_OEROOT/sstate-cache"
 		# Which files do we want to parse:
 		BBFILES ?= "$__orc_OEROOT/layers/openembedded-core/meta/recipes-*/*/*.bb"
 	EOF
