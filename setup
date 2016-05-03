@@ -46,7 +46,7 @@ __orc_cleanup() {
 	unset __orc_choose __orc_getdir __orc_machinesNlayers __orc_sdkmachines __orc_distrosNlayers __orc_imagesNlayers
 	unset __orc_cleanup
 }
-trap __orc_cleanup RETURN
+trap __orc_cleanup RETURN SIGINT
 
 # check for some variables to see if they're already defined
 __orc_MACHINEdefined=0
@@ -310,7 +310,7 @@ if [ -z "$MACHINE" ]; then
 	echo ""
 
 	# guard against Ctrl-D or cancel
-	if [ -z "$MACHINE" ]; then
+	if [ -z "$MACHINE" -a -n "${__orc_MACHINES[*]}" ]; then
 		echo ""
 		echo "To choose a machine interactively please install bash, dialog, or whiptail."
 		echo "To choose a machine non-interactively please use the following syntax:"
@@ -321,6 +321,7 @@ if [ -z "$MACHINE" ]; then
 		return
 	fi
 fi
+return
 
 ## choose an SDKMACHINE
 if [ -z "$SDKMACHINE" ]; then
@@ -330,7 +331,7 @@ if [ -z "$SDKMACHINE" ]; then
 	SDKMACHINE=$(__orc_choose __orc_SDKMACHINES[@] "" "Available SDKs" "Please choose an SDK machine")
 	echo ""
 
-	if [ -z "$SDKMACHINE" ]; then
+	if [ -z "$SDKMACHINE" -a -n "$__orc_SDKMACHINES" ]; then
 		echo "To choose an SDK machine interactively please install bash, dialog, or whiptail."
 		echo "To choose a machine non-interactively please use the following syntax:"
 		echo "    SDKMACHINE=<your-sdk-machine> . setup"
@@ -352,7 +353,7 @@ if [ -z "$DISTRO" ]; then
 	DISTRO=$(__orc_choose __orc_DISTROS[@] __orc_DISTLYR[@] "Available distros" "Please choose a distro")
 	echo ""
 
-	if [ -z "$DISTRO" ]; then
+	if [ -z "$DISTRO" -a -n "$__orc_DISTROS" ]; then
 		echo "To choose a distro interactively please install bash, dialog, or whiptail."
 		echo "To choose a distro non-interactively please use the following syntax:"
 		echo "    DISTRO=<your-distro> . setup"
