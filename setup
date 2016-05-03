@@ -19,7 +19,7 @@
 
 # cleanup on return
 __orc_cleanup() {
-	unset __orc_OEROOT __orc_TEMPLATECONF __orc_CMDLINEOPTS
+	unset __orc_OEROOT __orc_TEMPLATECONF __orc_CMDLINEOPTS __orc_NOGUI
 	unset __orc_tmpMACHINES __orc_MAC __orc_MACHLAYR __orc_MACHINES
 	unset __orc_tmpSDKMACHINES __orc_SDKMACHINES
 	unset __orc_tmpDISTROS __orc_DIS __orc_DISTLYR __orc_DISTROS
@@ -69,6 +69,7 @@ fi
 # $3 - title
 # $4 - selection help
 # return - what the user chose, or ""
+__orc_NOGUI=0
 __orc_choose() {
 	local _MENULIST=""
 	local _i
@@ -78,46 +79,46 @@ __orc_choose() {
 	local _HELP="$4"
 	local _CHOICE=""
 
-	help select > /dev/null 2>&1
-	if [ $? -eq 0 ]; then
-		echo $_TITLE >&2
+	which dialog > /dev/null 2>&1
+	if [ $? -eq 0 -a $__orc_NOGUI -eq 0 ]; then
 		for ((_i=0; _i<${#_CHOICES[*]}; ++_i)); do
 			if [ -n "$2" ]; then
-				_MENULIST="$_MENULIST ${_CHOICES[$_i]}(${_LAYERS[$_i]})"
+				_MENULIST="$_MENULIST ${_CHOICES[$_i]} ${_LAYERS[$_i]}"
 			else
-				_MENULIST="$_MENULIST ${_CHOICES[$_i]}"
+				_MENULIST="$_MENULIST ${_CHOICES[$_i]} ${_CHOICES[$_i]}"
 			fi
 		done
-		PS3="$_HELP by entering a number: "
-		select _CHOICE in $_MENULIST; do
-			if [ -n "$_CHOICE" ]; then
-				_CHOICE=$(echo $_CHOICE | cut -d'(' -f1)
-				break
-			fi
-			echo "invalid choice, please try again" >&2
-		done
+		_CHOICE=$(dialog --title "$_TITLE" --menu "$_HELP" 0 0 $_i $_MENULIST 3>&1 1>&2 2>&3)
 	else
-		which dialog > /dev/null 2>&1
-		if [ $? -eq 0 ]; then
+		which whiptail > /dev/null 2>&1
+		if [ $? -eq 0 -a $__orc_NOGUI -eq 0 ]; then
 			for ((_i=0; _i<${#_CHOICES[*]}; ++_i)); do
 				if [ -n "$2" ]; then
-					_MENULIST="$_MENULIST ${_CHOICES[$_i]} ${_LAYERS[$_i]}"
+					_MENULIST="$_MENULIST ${_CHOICES[$_i]} ${_LAYERS[$_i]} OFF\n"
 				else
-					_MENULIST="$_MENULIST ${_CHOICES[$_i]} ${_CHOICES[$_i]}"
+					_MENULIST="$_MENULIST ${_CHOICES[$_i]} OFF\n"
 				fi
 			done
-			_CHOICE=$(dialog --title "$_TITLE" --menu "$_HELP" 0 0 $_i $_MENULIST 3>&1 1>&2 2>&3)
+			_CHOICE=$(whiptail --title "$_TITLE" --radiolist "$_HELP" $_i 100 $_i $_MENULIST 3>&1 1>&2 2>&3)
 		else
-			which whiptail > /dev/null 2>&1
+			help select > /dev/null 2>&1
 			if [ $? -eq 0 ]; then
+				echo $_TITLE >&2
 				for ((_i=0; _i<${#_CHOICES[*]}; ++_i)); do
 					if [ -n "$2" ]; then
-						_MENULIST="$_MENULIST ${_CHOICES[$_i]} ${_LAYERS[$_i]} OFF\n"
+						_MENULIST="$_MENULIST ${_CHOICES[$_i]}(${_LAYERS[$_i]})"
 					else
-						_MENULIST="$_MENULIST ${_CHOICES[$_i]} OFF\n"
+						_MENULIST="$_MENULIST ${_CHOICES[$_i]}"
 					fi
 				done
-				_CHOICE=$(whiptail --title "$_TITLE" --radiolist "$_HELP" $_i 100 $_i $_MENULIST 3>&1 1>&2 2>&3)
+				PS3="$_HELP by entering a number: "
+				select _CHOICE in $_MENULIST; do
+					if [ -n "$_CHOICE" ]; then
+						_CHOICE=$(echo $_CHOICE | cut -d'(' -f1)
+						break
+					fi
+					echo "invalid choice, please try again" >&2
+				done
 			else
 				echo "no available choosers" >&2
 			fi
@@ -248,6 +249,29 @@ if [ "$0" = "$BASH_SOURCE" ]; then
 	done
 	exit
 fi
+
+__orc_CMDLINEOPTS=$(getopt -o g --long no-gui -- "$@")
+if [ $? != 0 ]; then
+	echo "ERROR: bad cmdline"
+	return
+fi
+eval set -- "$__orc_CMDLINEOPTS"
+while true; do
+	case "$1" in
+		-g|--no-gui)
+			__orc_NOGUI=1
+			;;
+		--)
+			shift
+			break
+			;;
+		*)
+			echo "ERROR: internal error! ($1)"
+			return
+			;;
+	esac
+	shift
+done
 
 if [ "$(whoami)" = "root" ]; then
 	echo "ERROR: do not use this setup program as root!"
