@@ -356,8 +356,11 @@ fi
 
 ## specify your DL_DIR
 if [ -z "$DL_DIR" ]; then
-	DL_DIR="$__orc_OEROOT/downloads"
 	DL_DIR=$(__orc_dldir)
+
+	if [ -z "$DL_DIR" ]; then
+		DL_DIR="$__orc_OEROOT/downloads"
+	fi
 fi
 
 # Clean up PATH, because if it includes tokens to current directories somehow,
