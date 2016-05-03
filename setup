@@ -249,11 +249,6 @@ if [ "$0" = "$BASH_SOURCE" ]; then
 	exit
 fi
 
-BUILDDIR="$1"
-if [ -z "$BUILDDIR" ]; then
-	BUILDDIR=build
-fi
-
 if [ "$(whoami)" = "root" ]; then
 	echo "ERROR: do not use this setup program as root!"
 	return
@@ -355,6 +350,11 @@ SDKMACHINE BB_NUMBER_THREADS BB_NO_NETWORK PARALLEL_MAKE GIT_PROXY_COMMAND \
 SOCKS5_PASSWD SOCKS5_USER SCREENDIR STAMPS_DIR"
 
 __orc_TEMPLATECONF=$__orc_OEROOT/.repo/manifests/conf
+BUILDDIR="$1"
+if [ -z "$BUILDDIR" ]; then
+	BUILDDIR=build-$DISTRO
+fi
+BUILDDIR=$__orc_OEROOT/$BUILDDIR
 mkdir -p $BUILDDIR/conf
 if [ ! -r $BUILDDIR/conf/local.conf ]; then
 	cp $__orc_TEMPLATECONF/local.conf $BUILDDIR/conf/local.conf
