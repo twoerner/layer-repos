@@ -40,7 +40,7 @@ __orc_cleanup() {
 		export BUILDDIR
 	fi
 
-	unset __orc_choose __orc_dldir __orc_machinesNlayers __orc_sdkmachines __orc_distrosNlayers __orc_imagesNlayers
+	unset __orc_choose __orc_getdir __orc_machinesNlayers __orc_sdkmachines __orc_distrosNlayers __orc_imagesNlayers
 	unset __orc_cleanup
 }
 trap __orc_cleanup RETURN
@@ -127,9 +127,15 @@ __orc_choose() {
 	echo $_CHOICE
 }
 
-__orc_dldir() {
+# $1 - help string
+# $2 - default value
+__orc_getdir() {
 	local _tmpdldir=""
-	local _helpstring="Please indicate the location of your DL_DIR (downloads directory): "
+	local _helpstring="$1"
+
+	if [ -n "$2" ]; then
+		_helpstring="$_helpstring [default: '$2']: "
+	fi
 
 	help read > /dev/null 2>&1
 	if [ $? -eq 0 ]; then
@@ -355,7 +361,7 @@ fi
 
 ## specify your DL_DIR
 if [ -z "$DL_DIR" ]; then
-	DL_DIR=$(__orc_dldir)
+	DL_DIR=$(__orc_getdir "Please indicate the location of your downloads directory" "$__orc_OEROOT/downloads")
 
 	if [ -z "$DL_DIR" ]; then
 		DL_DIR="$__orc_OEROOT/downloads"
