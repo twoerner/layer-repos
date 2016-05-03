@@ -37,7 +37,6 @@
 	<!-- misc -->
 	<project remote="github" name="twoerner/oe-repo-config.git"         path=".repo/oe-repo-config">
 		<linkfile dest="setup" src="../../.repo/oe-repo-config/setup" />
-		<linkfile dest="env" src="../../.repo/oe-repo-config/env" />
 	</project>
 
 </manifest>

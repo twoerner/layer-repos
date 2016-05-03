@@ -22,7 +22,7 @@ __orc_cleanup() {
 	unset __orc_tmpMACHINES __orc_MAC __orc_MACHLAYR __orc_MACHINES
 	unset __orc_tmpSDKMACHINES __orc_SDKMACHINES
 	unset __orc_tmpDISTROS __orc_DIS __orc_DISTLYR __orc_DISTROS
-	unset __orc_NEWPATHS __orc_IMAGETARGETS
+	unset __orc_NEWPATHS __orc_IMAGETARGETS __orc_FRESHINSTALL
 	if [ $__orc_MACHINEdefined -ne 1 ]; then
 		unset MACHINE
 	fi
@@ -297,89 +297,126 @@ if [ ! -d $__orc_OEROOT/layers ]; then
 	return
 fi
 
-## choose a MACHINE
-if [ -z "$MACHINE" ]; then
-	declare -a __orc_MACHINES
-	declare -a __orc_MACHLAYR
-	__orc_machinesNlayers __orc_tmpMACHINES
-	for __orc_MAC in $__orc_tmpMACHINES; do
-		__orc_MACHINES+=($(echo $__orc_MAC | cut -d'(' -f1))
-		__orc_MACHLAYR+=($(echo $__orc_MAC | cut -d'(' -f2 | cut -d')' -f1))
-	done
-	MACHINE=$(__orc_choose __orc_MACHINES[@] __orc_MACHLAYR[@] "Available machines" "Please choose a machine")
-	echo ""
-
-	# guard against Ctrl-D or cancel
-	if [ -z "$MACHINE" -a -n "${__orc_MACHINES[*]}" ]; then
-		echo ""
-		echo "To choose a machine interactively please install bash, dialog, or whiptail."
-		echo "To choose a machine non-interactively please use the following syntax:"
-		echo "    MACHINE=<your-machine> . setup"
-		echo ""
-		echo "Possible <your-machine> choices are:"
-		echo ${__orc_MACHINES[*]} | tr ' ' '\n' | sed -e 's/^/\t/'
-		return
-	fi
+__orc_FRESHINSTALL=0
+BUILDDIR="$1"
+if [ -z "$BUILDDIR" ]; then
+	BUILDDIR=build
 fi
-return
-
-## choose an SDKMACHINE
-if [ -z "$SDKMACHINE" ]; then
-	declare -a __orc_SDKMACHINES
-	__orc_sdkmachines __orc_tmpSDKMACHINES
-	__orc_SDKMACHINES=($__orc_tmpSDKMACHINES)
-	SDKMACHINE=$(__orc_choose __orc_SDKMACHINES[@] "" "Available SDKs" "Please choose an SDK machine")
-	echo ""
-
-	if [ -z "$SDKMACHINE" -a -n "$__orc_SDKMACHINES" ]; then
-		echo "To choose an SDK machine interactively please install bash, dialog, or whiptail."
-		echo "To choose a machine non-interactively please use the following syntax:"
-		echo "    SDKMACHINE=<your-sdk-machine> . setup"
+BUILDDIR=$__orc_OEROOT/$BUILDDIR
+if [ -e $BUILDDIR/conf/site.conf ]; then
+	echo "looks like there's a build already configured here"
+else
+	## choose a MACHINE
+	if [ -z "$MACHINE" ]; then
+		declare -a __orc_MACHINES
+		declare -a __orc_MACHLAYR
+		__orc_machinesNlayers __orc_tmpMACHINES
+		for __orc_MAC in $__orc_tmpMACHINES; do
+			__orc_MACHINES+=($(echo $__orc_MAC | cut -d'(' -f1))
+			__orc_MACHLAYR+=($(echo $__orc_MAC | cut -d'(' -f2 | cut -d')' -f1))
+		done
+		MACHINE=$(__orc_choose __orc_MACHINES[@] __orc_MACHLAYR[@] "Available machines" "Please choose a machine")
 		echo ""
-		echo "Possible <your-sdk-machine> choices are:"
-		echo ${__orc_SDKMACHINES[*]} | tr ' ' '\n' | sed -e 's/^/\t/'
-		return
+
+		# guard against Ctrl-D or cancel
+		if [ -z "$MACHINE" -a -n "${__orc_MACHINES[*]}" ]; then
+			echo ""
+			echo "To choose a machine interactively please install bash, dialog, or whiptail."
+			echo "To choose a machine non-interactively please use the following syntax:"
+			echo "    MACHINE=<your-machine> . setup"
+			echo ""
+			echo "Possible <your-machine> choices are:"
+			echo ${__orc_MACHINES[*]} | tr ' ' '\n' | sed -e 's/^/\t/'
+			return
+		fi
 	fi
-fi
 
-## choose a DISTRO
-if [ -z "$DISTRO" ]; then
-	declare -a __orc_DISTROS
-	__orc_distrosNlayers __orc_tmpDISTROS
-	for __orc_DIS in $__orc_tmpDISTROS; do
-		__orc_DISTROS+=($(echo $__orc_DIS | cut -d'(' -f1))
-		__orc_DISTLYR+=($(echo $__orc_DIS | cut -d'(' -f2 | cut -d')' -f1))
-	done
-	DISTRO=$(__orc_choose __orc_DISTROS[@] __orc_DISTLYR[@] "Available distros" "Please choose a distro")
-	echo ""
-
-	if [ -z "$DISTRO" -a -n "$__orc_DISTROS" ]; then
-		echo "To choose a distro interactively please install bash, dialog, or whiptail."
-		echo "To choose a distro non-interactively please use the following syntax:"
-		echo "    DISTRO=<your-distro> . setup"
+	## choose an SDKMACHINE
+	if [ -z "$SDKMACHINE" ]; then
+		declare -a __orc_SDKMACHINES
+		__orc_sdkmachines __orc_tmpSDKMACHINES
+		__orc_SDKMACHINES=($__orc_tmpSDKMACHINES)
+		SDKMACHINE=$(__orc_choose __orc_SDKMACHINES[@] "" "Available SDKs" "Please choose an SDK machine")
 		echo ""
-		echo "Possible <your-distro> choices are:"
-		echo ${__orc_DISTROS[*]} | tr ' ' '\n' | sed -e 's/^/\t/'
-		return
+
+		if [ -z "$SDKMACHINE" -a -n "$__orc_SDKMACHINES" ]; then
+			echo "To choose an SDK machine interactively please install bash, dialog, or whiptail."
+			echo "To choose a machine non-interactively please use the following syntax:"
+			echo "    SDKMACHINE=<your-sdk-machine> . setup"
+			echo ""
+			echo "Possible <your-sdk-machine> choices are:"
+			echo ${__orc_SDKMACHINES[*]} | tr ' ' '\n' | sed -e 's/^/\t/'
+			return
+		fi
 	fi
-fi
 
-## specify your DL_DIR
-if [ -z "$DL_DIR" ]; then
-	DL_DIR=$(__orc_getdir "Please indicate the location of your downloads directory" "$__orc_OEROOT/downloads")
+	## choose a DISTRO
+	if [ -z "$DISTRO" ]; then
+		declare -a __orc_DISTROS
+		__orc_distrosNlayers __orc_tmpDISTROS
+		for __orc_DIS in $__orc_tmpDISTROS; do
+			__orc_DISTROS+=($(echo $__orc_DIS | cut -d'(' -f1))
+			__orc_DISTLYR+=($(echo $__orc_DIS | cut -d'(' -f2 | cut -d')' -f1))
+		done
+		DISTRO=$(__orc_choose __orc_DISTROS[@] __orc_DISTLYR[@] "Available distros" "Please choose a distro")
+		echo ""
 
+		if [ -z "$DISTRO" -a -n "$__orc_DISTROS" ]; then
+			echo "To choose a distro interactively please install bash, dialog, or whiptail."
+			echo "To choose a distro non-interactively please use the following syntax:"
+			echo "    DISTRO=<your-distro> . setup"
+			echo ""
+			echo "Possible <your-distro> choices are:"
+			echo ${__orc_DISTROS[*]} | tr ' ' '\n' | sed -e 's/^/\t/'
+			return
+		fi
+	fi
+
+	## specify your DL_DIR
 	if [ -z "$DL_DIR" ]; then
-		DL_DIR="$__orc_OEROOT/downloads"
+		DL_DIR=$(__orc_getdir "Please indicate the location of your downloads directory" "$__orc_OEROOT/downloads")
+
+		if [ -z "$DL_DIR" ]; then
+			DL_DIR="$__orc_OEROOT/downloads"
+		fi
 	fi
-fi
 
-## specify shared state dir
-if [ -z "$SSTATE_DIR" ]; then
-	SSTATE_DIR=$(__orc_getdir "Please indicate the location of your shared state directory" "$__orc_OEROOT/sstate-cache")
-
+	## specify shared state dir
 	if [ -z "$SSTATE_DIR" ]; then
-		SSTATE_DIR="$__orc_OEROOT/sstate-cache"
+		SSTATE_DIR=$(__orc_getdir "Please indicate the location of your shared state directory" "$__orc_OEROOT/sstate-cache")
+
+		if [ -z "$SSTATE_DIR" ]; then
+			SSTATE_DIR="$__orc_OEROOT/sstate-cache"
+		fi
 	fi
+
+	__orc_TEMPLATECONF=$__orc_OEROOT/.repo/manifests/conf
+	mkdir -p $BUILDDIR/conf
+	if [ ! -r $BUILDDIR/conf/local.conf ]; then
+		cp $__orc_TEMPLATECONF/local.conf $BUILDDIR/conf/local.conf
+	fi
+	if [ ! -r $BUILDDIR/conf/bblayers.conf ]; then
+		sed -e "s|##OEROOT##|$__orc_OEROOT|g" $__orc_TEMPLATECONF/bblayers.conf > "$BUILDDIR/conf/bblayers.conf"
+	fi
+
+	cat > $BUILDDIR/conf/auto.conf <<-EOF
+		MACHINE ?= "$MACHINE"
+		SDKMACHINE ?= "$SDKMACHINE"
+		DISTRO ?= "$DISTRO"
+		DL_DIR ?= "$DL_DIR"
+		SSTATE_DIR ?= "$SSTATE_DIR"
+		BBLAYERS_FETCH_DIR = "$__orc_OEROOT/layers"
+	EOF
+
+	if [ ! -e $BUILDDIR/conf/site.conf ]; then
+		cat > $BUILDDIR/conf/site.conf <<-EOF
+			SCONF_VERSION = "1"
+			# Which files do we want to parse:
+			BBFILES ?= "$__orc_OEROOT/layers/openembedded-core/meta/recipes-*/*/*.bb"
+		EOF
+	fi
+
+	__orc_FRESHINSTALL=1
 fi
 
 # Clean up PATH, because if it includes tokens to current directories somehow,
@@ -395,62 +432,25 @@ all_proxy NO_PROXY no_proxy SSH_AGENT_PID SSH_AUTH_SOCK BB_SRCREV_POLICY \
 SDKMACHINE BB_NUMBER_THREADS BB_NO_NETWORK PARALLEL_MAKE GIT_PROXY_COMMAND \
 SOCKS5_PASSWD SOCKS5_USER SCREENDIR STAMPS_DIR"
 
-__orc_TEMPLATECONF=$__orc_OEROOT/.repo/manifests/conf
-BUILDDIR="$1"
-if [ -z "$BUILDDIR" ]; then
-	BUILDDIR=build-$DISTRO
-fi
-BUILDDIR=$__orc_OEROOT/$BUILDDIR
-mkdir -p $BUILDDIR/conf
-if [ ! -r $BUILDDIR/conf/local.conf ]; then
-	cp $__orc_TEMPLATECONF/local.conf $BUILDDIR/conf/local.conf
-fi
-if [ ! -r $BUILDDIR/conf/bblayers.conf ]; then
-	sed -e "s|##OEROOT##|$__orc_OEROOT|g" $__orc_TEMPLATECONF/bblayers.conf > "$BUILDDIR/conf/bblayers.conf"
-fi
-
-cat > $BUILDDIR/conf/auto.conf <<-EOF
-	MACHINE ?= "$MACHINE"
-	SDKMACHINE ?= "$SDKMACHINE"
-	DISTRO ?= "$DISTRO"
-	BBLAYERS_FETCH_DIR = "$__orc_OEROOT/layers"
-EOF
-
-if [ ! -e $BUILDDIR/conf/site.conf ]; then
-	cat > $BUILDDIR/conf/site.conf <<-EOF
-		SCONF_VERSION = "1"
-		DL_DIR ?= "$DL_DIR"
-		SSTATE_DIR ?= "$SSTATE_DIR"
-		# Which files do we want to parse:
-		BBFILES ?= "$__orc_OEROOT/layers/openembedded-core/meta/recipes-*/*/*.bb"
-	EOF
-fi
-
+echo "Your build environemnt has been configured with:"
+cat $BUILDDIR/conf/auto.conf | sed -e 's/^/\t/g'
+echo "You can now run 'bitbake <target>'"
+echo ""
+echo "Some image targets are:"
 __orc_imagesNlayers __orc_IMAGETARGETS
-cat <<EOF
-Your build environemnt has been configured with:
-
-	MACHINE: $MACHINE
-	SDKMACHINE: $SDKMACHINE
-	DISTRO: $DISTRO
-	DL_DIR: $DL_DIR
-	SSTATE_DIR: $SSTATE_DIR
-
-You can now run 'bitbake <target>'
-
-Some image targets are:
-EOF
 echo $__orc_IMAGETARGETS | tr ' ' '\n' | sed -e 's/^/\t/' | sed -e 's/(/ (/'
 
 cd $BUILDDIR
 
 # if the user hasn't selected 'angstrom' as their DISTRO we need to remove its layer
-if [ x"$DISTRO" != x"angstrom" ]; then
-	bitbake-layers remove-layer *angstrom
-	if [ $? -ne 0 ]; then
-		echo "You have selected a DISTRO other than 'angstrom' ($DISTRO)"
-		echo "but I wasn't able to remove meta-angstrom, therefore it will"
-		echo "set your DISTRO to angstrom unless you remove meta-angstrom"
-		echo "from your conf/bblayers.conf manually."
+if [ $__orc_FRESHINSTALL -eq 1 ]; then
+	if [ x"$DISTRO" != x"angstrom" ]; then
+		bitbake-layers remove-layer *angstrom
+		if [ $? -ne 0 ]; then
+			echo "You have selected a DISTRO other than 'angstrom' ($DISTRO)"
+			echo "but I wasn't able to remove meta-angstrom, therefore it will"
+			echo "set your DISTRO to angstrom unless you remove meta-angstrom"
+			echo "from your conf/bblayers.conf manually."
+		fi
 	fi
 fi
