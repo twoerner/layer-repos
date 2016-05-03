@@ -363,9 +363,6 @@ if [ -z "$DISTRO" ]; then
 		return
 	fi
 fi
-if [ -z "$DISTRO" ]; then
-	DISTRO=poky
-fi
 
 ## specify your DL_DIR
 if [ -z "$DL_DIR" ]; then
