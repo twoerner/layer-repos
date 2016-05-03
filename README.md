@@ -40,7 +40,8 @@ need to setup your build environment:
 
 	$ . setup
 
-You'll be prompted to choose your MACHINE, SDKMACHINE, DISTRO, and download location (DL_DIR).
+You'll be prompted to choose your MACHINE, SDKMACHINE, DISTRO, shared state
+location (SSTATE_DIR), and download location (DL_DIR).
 
 If you want to specify a build directory (for performing multiple builds
 from the same set of layers) simply include your build directory name as a

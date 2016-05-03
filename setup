@@ -35,7 +35,10 @@ __orc_cleanup() {
 	if [ $__orc_DLDIRdefined -ne 1 ]; then
 		unset DL_DIR
 	fi
-	unset __orc_MACHINEdefined __orc_SDKMACHINEdefined __orc_DISTROdefined __orc_DLDIRdefined
+	if [ $__orc_SSTATEdefined -ne 1 ]; then
+		unset SSTATE_DIR
+	fi
+	unset __orc_MACHINEdefined __orc_SDKMACHINEdefined __orc_DISTROdefined __orc_DLDIRdefined __orc_SSTATEdefined
 	if [ -n "$BUILDDIR" ]; then
 		export BUILDDIR
 	fi
@@ -50,6 +53,7 @@ __orc_MACHINEdefined=0
 __orc_SDKMACHINEdefined=0
 __orc_DISTROdefined=0
 __orc_DLDIRdefined=0
+__orc_SSTATEdefined=0
 if [ -n "$MACHINE" ]; then
 	__orc_MACHINEdefined=1
 fi
@@ -61,6 +65,9 @@ if [ -n "$DISTRO" ]; then
 fi
 if [ -n "$DL_DIR" ]; then
 	__orc_DLDIRdefined=1
+fi
+if [ -n "$SSTATE_DIR" ]; then
+	__orc_SSTATEdefined=1
 fi
 
 # $1 - an array of choices
@@ -368,6 +375,15 @@ if [ -z "$DL_DIR" ]; then
 	fi
 fi
 
+## specify shared state dir
+if [ -z "$SSTATE_DIR" ]; then
+	SSTATE_DIR=$(__orc_getdir "Please indicate the location of your shared state directory" "$__orc_OEROOT/sstate-cache")
+
+	if [ -z "$SSTATE_DIR" ]; then
+		SSTATE_DIR="$__orc_OEROOT/sstate-cache"
+	fi
+fi
+
 # Clean up PATH, because if it includes tokens to current directories somehow,
 # wrong binaries can be used instead of the expected ones during task execution
 export PATH="$(echo $PATH | sed -e 's/\(:.\|:\)*:/:/g;s/^.\?://;s/:.\?$//')"
@@ -406,7 +422,7 @@ if [ ! -e $BUILDDIR/conf/site.conf ]; then
 	cat > $BUILDDIR/conf/site.conf <<-EOF
 		SCONF_VERSION = "1"
 		DL_DIR ?= "$DL_DIR"
-		SSTATE_DIR ?= "$__orc_OEROOT/sstate-cache"
+		SSTATE_DIR ?= "$SSTATE_DIR"
 		# Which files do we want to parse:
 		BBFILES ?= "$__orc_OEROOT/layers/openembedded-core/meta/recipes-*/*/*.bb"
 	EOF
