@@ -169,7 +169,7 @@ __orc_sdkmachines() {
 	local _outvar=$1
 	local _tmp
 
-	_tmp="i686 x86_64"
+	_tmp="x86_64 i686"
 	eval $_outvar="'$_tmp'"
 }
 
