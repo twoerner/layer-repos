@@ -365,7 +365,7 @@ fi
 
 # Clean up PATH, because if it includes tokens to current directories somehow,
 # wrong binaries can be used instead of the expected ones during task execution
-export PATH="$(echo ${PATH} | sed -e 's/\(:.\|:\)*:/:/g;s/^.\?://;s/:.\?$//')"
+export PATH="$(echo $PATH | sed -e 's/\(:.\|:\)*:/:/g;s/^.\?://;s/:.\?$//')"
 __orc_NEWPATHS="$__orc_OEROOT/layers/openembedded-core/scripts:$__orc_OEROOT/bitbake/bin:"
 export PATH=$__orc_NEWPATHS$(echo $PATH | sed -e "s|:$__orc_NEWPATHS|:|g" -e "s|^$__orc_NEWPATHS||")
 
@@ -391,10 +391,10 @@ if [ ! -r $BUILDDIR/conf/bblayers.conf ]; then
 fi
 
 cat > $BUILDDIR/conf/auto.conf <<-EOF
-	MACHINE ?= "${MACHINE}"
-	SDKMACHINE ?= "${SDKMACHINE}"
-	DISTRO ?= "${DISTRO}"
-	DL_DIR ?= "${DL_DIR}"
+	MACHINE ?= "$MACHINE"
+	SDKMACHINE ?= "$SDKMACHINE"
+	DISTRO ?= "$DISTRO"
+	DL_DIR ?= "$DL_DIR"
 	SSTATE_DIR ?= "$__orc_OEROOT/sstate-cache"
 	BBLAYERS_FETCH_DIR = "$__orc_OEROOT/layers"
 EOF
@@ -403,7 +403,7 @@ if [ ! -e $BUILDDIR/conf/site.conf ]; then
 	cat > $BUILDDIR/conf/site.conf <<-EOF
 		SCONF_VERSION = "1"
 		# Which files do we want to parse:
-		BBFILES ?= "${__orc_OEROOT}/layers/openembedded-core/meta/recipes-*/*/*.bb"
+		BBFILES ?= "$__orc_OEROOT/layers/openembedded-core/meta/recipes-*/*/*.bb"
 	EOF
 fi
 
