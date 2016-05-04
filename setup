@@ -454,3 +454,9 @@ if [ $__orc_FRESHINSTALL -eq 1 ]; then
 		fi
 	fi
 fi
+
+# update prompt
+echo $PS1 | grep oe-repo-config > /dev/null
+if [ $? -ne 0 ]; then
+	export PS1="${PS1}(oe-repo-config) "
+fi
