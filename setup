@@ -16,6 +16,16 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+# deactivate function
+__orc_oldPATH=$PATH
+__orc_oldPS1=$PS1
+deactivate() {
+	export PATH=$__orc_oldPATH
+	export PS1=$__orc_oldPS1
+	unset BB_ENV_EXTRAWHITE BUILDDIR
+	unset __orc_oldPATH __orc_oldPS1 deactivate
+}
+
 # cleanup on return
 __orc_cleanup() {
 	unset __orc_OEROOT __orc_TEMPLATECONF __orc_CMDLINEOPTS __orc_NOGUI
