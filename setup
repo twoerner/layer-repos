@@ -33,6 +33,7 @@ __orc_cleanup() {
 	unset __orc_tmpSDKMACHINES __orc_SDKMACHINES
 	unset __orc_tmpDISTROS __orc_DIS __orc_DISTLYR __orc_DISTROS
 	unset __orc_NEWPATHS __orc_IMAGETARGETS __orc_FRESHINSTALL
+	unset __orc_EULA __orc_EULA_READ __orc_EULA_ACCEPT
 	if [ $__orc_MACHINEdefined -ne 1 ]; then
 		unset MACHINE
 	fi
@@ -429,6 +430,33 @@ else
 			# Which files do we want to parse:
 			BBFILES ?= "$__orc_OEROOT/layers/openembedded-core/meta/recipes-*/*/*.bb"
 		EOF
+	fi
+
+	# EULA
+	# this is a generic method of handling an EULA, taken from the oe-rpb-manifest scripts
+	# look for a conf/eula/$MACHINE file if $MACHINE requires an EULA
+	# present conf/eula/$MACHINE to the user for acceptance
+	__orc_EULA=$(find $__orc_OEROOT/layers -print | grep "conf/eula/$MACHINE")
+	if [ -n "$__orc_EULA" ]; then
+		echo
+		cat <<-EOF
+		The BSP for $MACHINE depends on packages and firmware which are covered by an
+		"End User License Agreement" (EULA). In order to use these files in your image,
+		you need to read and accept the following...
+		EOF
+		echo
+		read -e -p "Would you like to read the EULA? (y/N) " __orc_EULA_READ
+		if [ "$__orc_EULA_READ" = "y" -o "$__orc_EULA_READ" = "Y" ]; then
+			more -d $__orc_EULA
+			echo
+			read -e -p "Do you accept the EULA you just read? (y/N) " __orc_EULA_ACCEPT
+			if [ "$__orc_EULA_ACCEPT" = "y" -o "$__orc_EULA_ACCEPT" = "Y" ]; then
+				echo "EULA has been accepted"
+				echo "ACCEPT_EULA_$MACHINE = \"1\"" >> $BUILDDIR/conf/auto.conf
+			else
+				echo "EULA has not been accepted"
+			fi
+		fi
 	fi
 
 	__orc_FRESHINSTALL=1
