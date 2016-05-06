@@ -316,6 +316,11 @@ BUILDDIR=$__orc_OEROOT/$BUILDDIR
 if [ -e $BUILDDIR/conf/site.conf ]; then
 	echo "looks like there's a build already configured here"
 else
+	## clean up any prior partial configurations
+	rm -f $BUILDDIR/conf/auto.conf
+	rm -f $BUILDDIR/conf/local.conf
+	rm -f $BUILDDIR/conf/bblayers.conf
+
 	## choose a MACHINE
 	if [ -z "$MACHINE" ]; then
 		declare -a __orc_MACHINES
